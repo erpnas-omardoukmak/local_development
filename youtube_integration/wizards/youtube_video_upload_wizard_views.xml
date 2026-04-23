@@ -1,0 +1,81 @@
+<odoo>
+
+    <record id="youtube_video_upload_wizard_form" model="ir.ui.view">
+        <field name="name">youtube.video.upload.wizard.form</field>
+        <field name="model">youtube.video.upload.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Upload YouTube Video">
+                <sheet>
+                    <group>
+                        <group string="Target">
+                            <field name="google_account_id"/>
+                            <field name="channel_id"/>
+                            <field name="playlist_id"/>
+                        </group>
+                        <group string="File">
+                            <field name="video_file_path"/>
+                            <field name="custom_thumbnail" filename="custom_thumbnail_filename" widget="binary"/>
+                            <field name="custom_thumbnail_filename" invisible="1"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Snippet">
+                            <group>
+                                <group>
+                                    <field name="title"/>
+                                    <field name="tags" placeholder="odoo, youtube, tutorial"/>
+                                    <field name="category_id"/>
+                                </group>
+                                <group>
+                                    <field name="default_language"/>
+                                    <field name="default_audio_language"/>
+                                </group>
+                            </group>
+                            <field name="description" placeholder="Description..."/>
+                        </page>
+
+                        <page string="Status">
+                            <group>
+                                <group>
+                                    <field name="privacy_status"/>
+                                    <field name="license"/>
+                                    <field name="embeddable"/>
+                                    <field name="public_stats_viewable"/>
+                                </group>
+                                <group>
+                                    <field name="self_declared_made_for_kids"/>
+                                    <field name="publish_at"/>
+                                    <field name="recording_date"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <footer>
+                    <button name="action_upload"
+                            type="object"
+                            string="Upload"
+                            class="btn-primary"/>
+                    <button string="Cancel"
+                            class="btn-secondary"
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="youtube_video_upload_wizard_action" model="ir.actions.act_window">
+        <field name="name">Upload Video to YouTube</field>
+        <field name="res_model">youtube.video.upload.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="youtube_video_upload_wizard_menu"
+              name="Upload Video"
+              parent="youtube_root_menu"
+              action="youtube_video_upload_wizard_action"
+              sequence="50"/>
+
+</odoo>
