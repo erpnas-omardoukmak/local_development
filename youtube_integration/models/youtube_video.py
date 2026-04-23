@@ -101,6 +101,11 @@ class YouTubeVideo(models.Model):
     dislike_count = fields.Integer()
     comment_count = fields.Integer()
     favorite_count = fields.Integer()
+    analytics_ids = fields.One2many(
+        'youtube.video.analytics',
+        'video_id',
+        string='Analytics'
+    )
 
     # -------------------------------
     # Content Details
@@ -353,6 +358,7 @@ class YouTubeVideo(models.Model):
 
         # After successful upload: set custom thumbnail and add to playlist.
         if self.youtube_id:
+            self._update_recording_details(account)
             if self.custom_thumbnail:
                 try:
                     self._upload_thumbnail(account)
@@ -401,6 +407,7 @@ class YouTubeVideo(models.Model):
             'title': self.name or 'Untitled',
             'description': self.description or '',
         }
+
         if tags:
             snippet['tags'] = tags
         if self.category_id:
@@ -416,22 +423,41 @@ class YouTubeVideo(models.Model):
             'publicStatsViewable': bool(self.public_stats_viewable),
             'selfDeclaredMadeForKids': bool(self.self_declared_made_for_kids),
         }
+
         if self.license:
             status['license'] = self.license
 
         if self.publish_at:
-            # YouTube requires privacyStatus=private when scheduling
             status['privacyStatus'] = 'private'
             status['publishAt'] = self._format_datetime_rfc3339(self.publish_at)
 
-        body = {'snippet': snippet, 'status': status}
+        return {
+            'snippet': snippet,
+            'status': status,
+        }
 
-        if self.recording_date:
-            body['recordingDetails'] = {
-                'recordingDate': self._format_datetime_rfc3339(self.recording_date),
+    def _update_recording_details(self, account):
+        if not self.youtube_id or not self.recording_date:
+            return
+
+        url = "https://www.googleapis.com/youtube/v3/videos?part=recordingDetails"
+
+        headers = {
+            'Authorization': f'Bearer {account.access_token}',
+            'Content-Type': 'application/json'
+        }
+
+        body = {
+            'id': self.youtube_id,
+            'recordingDetails': {
+                'recordingDate': self._format_datetime_rfc3339(self.recording_date)
             }
+        }
 
-        return body
+        res = requests.put(url, headers=headers, json=body)
+
+        if res.status_code not in (200, 201):
+            raise UserError(res.text)
 
     # =========================================================
     # RESUME UPLOAD
@@ -619,3 +645,13 @@ class YouTubeVideo(models.Model):
             pass
 
         return record
+
+    def action_fetch_analytics(self):
+        from datetime import date, timedelta
+
+        for rec in self:
+            end = date.today()
+            start = end - timedelta(days=30)
+
+            self.env['youtube.video.analytics'].fetch_analytics(rec, start, end)
+

@@ -1,0 +1,51 @@
+<odoo>
+
+    <record id="youtube_playlist_upload_wizard_form" model="ir.ui.view">
+        <field name="name">youtube.playlist.upload.wizard.form</field>
+        <field name="model">youtube.playlist.upload.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Upload YouTube Playlist">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="google_account_id"/>
+                            <field name="channel_id"/>
+                        </group>
+                        <group>
+                            <field name="privacy_status"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <field name="name"/>
+                        <field name="description"/>
+                    </group>
+                </sheet>
+
+                <footer>
+                    <button name="action_upload_playlist"
+                            type="object"
+                            string="Upload"
+                            class="btn-primary"/>
+                    <button string="Cancel"
+                            class="btn-secondary"
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="youtube_playlist_upload_wizard_action" model="ir.actions.act_window">
+        <field name="name">Upload Playlist</field>
+        <field name="res_model">youtube.playlist.upload.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="youtube_playlist_upload_wizard_menu"
+              name="Upload Playlist"
+              parent="youtube_root_menu"
+              action="youtube_playlist_upload_wizard_action"
+              sequence="40"/>
+
+</odoo>

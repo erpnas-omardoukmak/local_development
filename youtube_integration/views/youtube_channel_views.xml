@@ -17,7 +17,7 @@
         <field name="name">youtube.channel.list</field>
         <field name="model">youtube.channel</field>
         <field name="arch" type="xml">
-            <list>
+            <list create="0">
                 <field name="name"/>
                 <field name="subscriber_count"/>
                 <field name="view_count"/>
