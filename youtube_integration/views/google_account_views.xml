@@ -1,0 +1,76 @@
+<odoo>
+
+    <!-- Root Menu -->
+    <menuitem id="youtube_root_menu" name="YouTube"/>
+
+    <!-- Google Accounts -->
+    <record id="google_account_action" model="ir.actions.act_window">
+        <field name="name">Google Accounts</field>
+        <field name="res_model">google.account</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="google_account_menu"
+              name="Google Accounts"
+              parent="youtube_root_menu"
+              action="google_account_action"/>
+
+    <!-- TREE -->
+    <record id="google_account_list" model="ir.ui.view">
+        <field name="name">google.account.list</field>
+        <field name="model">google.account</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- FORM -->
+    <record id="google_account_form" model="ir.ui.view">
+        <field name="name">google.account.form</field>
+        <field name="model">google.account</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_connect"
+                            type="object"
+                            string="Connect Google"
+                            class="btn-primary"/>
+
+                    <button name="sync_channels"
+                            type="object"
+                            string="Sync Channels"
+                            class="btn-secondary"/>
+                </header>
+
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="client_id"/>
+                        <field name="client_secret" password="True"/>
+                    </group>
+
+                    <group>
+                        <field name="access_token" readonly="1"/>
+                        <field name="refresh_token" readonly="1"/>
+                        <field name="token_expiry" readonly="1"/>
+                    </group>
+
+                    <notebook>
+                        <page string="Channels">
+                            <field name="channel_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="subscriber_count"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+</odoo>
