@@ -17,7 +17,7 @@
         <field name="name">youtube.video.list</field>
         <field name="model">youtube.video</field>
         <field name="arch" type="xml">
-            <list>
+            <list create="0">
                 <field name="thumbnail" widget="image" options="{'size': [24, 24], 'img_class': 'rounded-3'}" width="30" nolabel="1"/>
                 <field name="name"/>
                 <field name="channel_title"/>
@@ -39,10 +39,6 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="action_upload_video_resumable"
-                            type="object"
-                            string="Upload to YouTube"
-                            class="btn-primary"/>
                     <button name="action_upload_thumbnail"
                             type="object"
                             string="Upload Thumbnail"
@@ -52,6 +48,10 @@
                             type="object"
                             string="Fetch from YouTube"
                             class="btn-secondary"/>
+                    <button name="action_fetch_analytics"
+                        type="object"
+                        string="Fetch Analytics"
+                        class="btn-secondary"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
@@ -121,6 +121,22 @@
                                     <field name="favorite_count"/>
                                 </group>
                             </group>
+                        </page>
+
+                        <page string="Analytics">
+                            <field name="analytics_ids">
+                                <list>
+                                    <field name="date"/>
+                                    <field name="views"/>
+                                    <field name="likes"/>
+                                    <field name="comments"/>
+                                    <field name="estimated_minutes_watched"/>
+                                    <field name="average_view_duration"/>
+                                    <field name="subscribers_gained"/>
+                                    <field name="subscribers_lost"/>
+                                    <field name="engagement_rate"/>
+                                </list>
+                            </field>
                         </page>
 
                         <page string="Content Details">
@@ -200,7 +216,7 @@
                 <filter string="Public" name="public" domain="[('privacy_status', '=', 'public')]"/>
                 <filter string="Private" name="private" domain="[('privacy_status', '=', 'private')]"/>
                 <filter string="Scheduled" name="scheduled" domain="[('publish_at', '!=', False)]"/>
-                <group expand="0" string="Group By">
+                <group>
                     <filter string="Channel" name="by_channel" context="{'group_by': 'channel_title'}"/>
                     <filter string="Playlist" name="by_playlist" context="{'group_by': 'playlist_id'}"/>
                     <filter string="Privacy" name="by_privacy" context="{'group_by': 'privacy_status'}"/>

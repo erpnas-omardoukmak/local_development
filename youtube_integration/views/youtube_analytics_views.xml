@@ -1,0 +1,57 @@
+<odoo>
+
+    <!-- ============================= -->
+    <!-- PIVOT VIEW -->
+    <!-- ============================= -->
+    <record id="youtube_video_pivot_view" model="ir.ui.view">
+        <field name="name">youtube.video.pivot</field>
+        <field name="model">youtube.video</field>
+        <field name="arch" type="xml">
+            <pivot string="YouTube Analytics">
+                <!-- Measures -->
+                <field name="view_count" type="measure"/>
+                <field name="like_count" type="measure"/>
+                <field name="comment_count" type="measure"/>
+
+                <!-- Dimensions -->
+                <field name="channel_title" type="row"/>
+                <field name="published_at" type="col" interval="month"/>
+                <field name="privacy_status" type="row"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- ============================= -->
+    <!-- GRAPH VIEW -->
+    <!-- ============================= -->
+    <record id="youtube_video_graph_view" model="ir.ui.view">
+        <field name="name">youtube.video.graph</field>
+        <field name="model">youtube.video</field>
+        <field name="arch" type="xml">
+            <graph string="YouTube Analytics" type="bar">
+                <field name="published_at" interval="month"/>
+                <field name="view_count" type="measure"/>
+                <field name="like_count" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- ============================= -->
+    <!-- ACTION -->
+    <!-- ============================= -->
+    <record id="youtube_video_analytics_action" model="ir.actions.act_window">
+        <field name="name">YouTube Analytics</field>
+        <field name="res_model">youtube.video</field>
+        <field name="view_mode">pivot,graph,list</field>
+    </record>
+
+    <!-- ============================= -->
+    <!-- MENU -->
+    <!-- ============================= -->
+    <menuitem id="youtube_video_analytics_menu"
+              name="Analytics"
+              parent="youtube_root_menu"
+              action="youtube_video_analytics_action"
+              sequence="60"/>
+
+</odoo>

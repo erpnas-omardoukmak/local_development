@@ -17,7 +17,7 @@
         <field name="name">youtube.playlist.list</field>
         <field name="model">youtube.playlist</field>
         <field name="arch" type="xml">
-            <list>
+            <list create="0">
                 <field name="name"/>
                 <field name="channel_id"/>
                 <field name="status"/>
@@ -32,10 +32,6 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="action_create_playlist"
-                            type="object"
-                            string="Upload to YouTube"
-                            class="btn-secondary"/>
                     <button name="action_fetch_playlist_by_id"
                             type="object"
                             string="Fetch from YouTube"

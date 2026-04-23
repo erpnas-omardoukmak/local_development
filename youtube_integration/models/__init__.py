@@ -2,3 +2,6 @@ from . import google_account
 from . import youtube_channel
 from . import youtube_playlist
 from . import youtube_video
+from . import youtube_channel_stats
+from . import youtube_video_stats
+from . import youtube_analytics

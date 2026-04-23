@@ -4,3 +4,5 @@ access_youtube_channel,youtube.channel,model_youtube_channel,,1,1,1,1
 access_youtube_playlist,youtube.playlist,model_youtube_playlist,,1,1,1,1
 access_youtube_video,youtube.video,model_youtube_video,,1,1,1,1
 access_youtube_video_upload_wizard,youtube.video.upload.wizard,model_youtube_video_upload_wizard,,1,1,1,1
+access_youtube_playlist_upload_wizard,youtube.playlist.upload.wizard,model_youtube_playlist_upload_wizard,,1,1,1,1
+access_youtube_video_analytics,youtube.video.analytics,model_youtube_video_analytics,,1,1,1,1

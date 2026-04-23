@@ -33,7 +33,13 @@ class GoogleAccount(models.Model):
             'client_id': self.client_id,
             'redirect_uri': self._get_redirect_uri(),
             'response_type': 'code',
-            'scope': 'https://www.googleapis.com/auth/youtube.upload https://www.googleapis.com/auth/youtube',
+            'scope': ' '.join([
+                'https://www.googleapis.com/auth/youtube.upload',
+                'https://www.googleapis.com/auth/youtube',
+                'https://www.googleapis.com/auth/youtube.force-ssl',
+                'https://www.googleapis.com/auth/yt-analytics.readonly',
+            ]),
+            'include_granted_scopes': 'true',
             'access_type': 'offline',
             'prompt': 'consent',
             'state': self.id,
@@ -102,3 +108,93 @@ class GoogleAccount(models.Model):
 
         for item in res.get('items', []):
             self.env['youtube.channel'].create_or_update_from_api(self, item)
+
+    def fetch_channel_analytics(self, start_date, end_date):
+        self.ensure_one()
+        self._ensure_token()
+
+        import requests
+
+        url = "https://youtubeanalytics.googleapis.com/v2/reports"
+
+        headers = {
+            'Authorization': f'Bearer {self.access_token}'
+        }
+
+        params = {
+            'ids': 'channel==MINE',
+            'startDate': start_date,
+            'endDate': end_date,
+            'metrics': 'views,estimatedMinutesWatched,subscribersGained,subscribersLost',
+            'dimensions': 'day',
+        }
+
+        res = requests.get(url, headers=headers, params=params).json()
+
+        if res.get('error'):
+            raise Exception(res['error'])
+
+        rows = res.get('rows', [])
+        for row in rows:
+            date, views, watch_time, gained, lost = row
+
+            self.env['youtube.channel.stats'].create({
+                'channel_id': self.channel_ids[:1].id,
+                'date': date,
+                'views': int(views),
+                'watch_time': float(watch_time),
+                'subscribers_gained': int(gained),
+                'subscribers_lost': int(lost),
+            })
+
+    def fetch_video_analytics(self, video, start_date, end_date):
+        self.ensure_one()
+        self._ensure_token()
+
+        import requests
+
+        url = "https://youtubeanalytics.googleapis.com/v2/reports"
+
+        headers = {
+            'Authorization': f'Bearer {self.access_token}'
+        }
+
+        params = {
+            'ids': 'channel==MINE',
+            'startDate': start_date,
+            'endDate': end_date,
+            'metrics': 'views,likes,comments,estimatedMinutesWatched,averageViewDuration',
+            'dimensions': 'day',
+            'filters': f'video=={video.youtube_id}',
+        }
+
+        res = requests.get(url, headers=headers, params=params).json()
+
+        if res.get('error'):
+            raise Exception(res['error'])
+
+        for row in res.get('rows', []):
+            date, views, likes, comments, watch_time, avg = row
+
+            self.env['youtube.video.stats'].create({
+                'video_id': video.id,
+                'date': date,
+                'views': int(views),
+                'likes': int(likes),
+                'comments': int(comments),
+                'watch_time': float(watch_time),
+                'avg_view_duration': float(avg),
+            })
+
+    def cron_fetch_analytics(self):
+        from datetime import date, timedelta
+
+        end = date.today()
+        start = end - timedelta(days=1)
+
+        for acc in self.search([]):
+            acc.fetch_channel_analytics(str(start), str(end))
+
+            for video in self.env['youtube.video'].search([]):
+                acc.fetch_video_analytics(video, str(start), str(end))
+

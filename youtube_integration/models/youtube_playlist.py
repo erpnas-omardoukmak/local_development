@@ -84,7 +84,7 @@ class YouTubePlaylist(models.Model):
                 "description": self.description or ""
             },
             "status": {
-                "privacyStatus": "private"
+                "privacyStatus": self.status
             }
         }
 
