@@ -1,6 +1,6 @@
 {
     'name': 'YouTube Integration',
-    'version': '0.3',
+    'version': '0.4',
     'depends': ['base', 'web'],
     'data': [
         'security/ir.model.access.csv',
@@ -9,8 +9,11 @@
         'views/youtube_channel_views.xml',
         'views/youtube_playlist_views.xml',
         'views/youtube_video_views.xml',
+        'views/youtube_short_views.xml',
         'views/youtube_analytics_views.xml',
         'wizards/youtube_video_upload_wizard_views.xml',
+        'wizards/youtube_short_upload_wizard_views.xml',
+        'wizards/youtube_video_to_short_wizard_views.xml',
         'wizards/youtube_playlist_upload_wizard_views.xml',
     ],
     'installable': True,

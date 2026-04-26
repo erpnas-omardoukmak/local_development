@@ -71,7 +71,6 @@ class YouTubeVideoAnalytics(models.Model):
         }
 
         res = requests.get(url, headers=headers, params=params, timeout=60).json()
-        print('res=====================', res)
         if 'rows' not in res:
             return
 

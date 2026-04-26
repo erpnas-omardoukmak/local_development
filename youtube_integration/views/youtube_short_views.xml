@@ -1,29 +1,30 @@
 <odoo>
 
     <!-- Action -->
-    <record id="youtube_video_action" model="ir.actions.act_window">
-        <field name="name">Episodes (Videos)</field>
-        <field name="res_model">youtube.video</field>
+    <record id="youtube_short_action" model="ir.actions.act_window">
+        <field name="name">Shorts (Reels)</field>
+        <field name="res_model">youtube.short</field>
         <field name="view_mode">list,form</field>
     </record>
 
-    <menuitem id="youtube_video_menu"
-              name="Episodes (Videos)"
+    <menuitem id="youtube_short_menu"
+              name="Shorts (Reels)"
               parent="youtube_root_menu"
-              action="youtube_video_action"/>
+              action="youtube_short_action"
+              sequence="15"/>
 
     <!-- LIST -->
-    <record id="youtube_video_list" model="ir.ui.view">
-        <field name="name">youtube.video.list</field>
-        <field name="model">youtube.video</field>
+    <record id="youtube_short_list" model="ir.ui.view">
+        <field name="name">youtube.short.list</field>
+        <field name="model">youtube.short</field>
         <field name="arch" type="xml">
-            <list create="0">
+            <list>
                 <field name="thumbnail" widget="image" options="{'size': [24, 24], 'img_class': 'rounded-3'}" width="30" nolabel="1"/>
                 <field name="program_code"/>
-                <field name="week_label"/>
+                <field name="video_id"/>
+                <field name="reel_number"/>
                 <field name="name"/>
                 <field name="asset_code" optional="hide"/>
-                <field name="channel_title" optional="hide"/>
                 <field name="published_at"/>
                 <field name="duration"/>
                 <field name="view_count" string="Views"/>
@@ -34,7 +35,6 @@
                 <field name="reach" optional="hide"/>
                 <field name="watch_time_min" optional="hide"/>
                 <field name="engagement_rate" widget="percentage" optional="hide"/>
-                <field name="short_count" string="Shorts"/>
                 <field name="privacy_status"/>
                 <field name="upload_status" optional="hide"/>
             </list>
@@ -42,9 +42,9 @@
     </record>
 
     <!-- FORM -->
-    <record id="youtube_video_form" model="ir.ui.view">
-        <field name="name">youtube.video.form</field>
-        <field name="model">youtube.video</field>
+    <record id="youtube_short_form" model="ir.ui.view">
+        <field name="name">youtube.short.form</field>
+        <field name="model">youtube.short</field>
         <field name="arch" type="xml">
             <form>
                 <header>
@@ -57,29 +57,20 @@
                             type="object"
                             string="Fetch from YouTube"
                             class="btn-secondary"/>
-                    <button name="action_fetch_analytics"
-                            type="object"
-                            string="Fetch Analytics"
-                            class="btn-secondary"/>
-                    <button name="action_convert_to_short_of"
-                            type="object"
-                            string="Convert to Short"
-                            class="btn-secondary"
-                            invisible="not is_short"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
-                        <h1><field name="name" placeholder="Video title"/></h1>
+                        <h1><field name="name" placeholder="Short title"/></h1>
                         <field name="youtube_url" widget="url" readonly="1" invisible="not youtube_id"/>
                     </div>
                     <group>
                         <group>
+                            <field name="video_id"/>
+                            <field name="reel_number"/>
                             <field name="youtube_id"/>
-                            <field name="playlist_id"/>
                             <field name="program_code" readonly="1"/>
                             <field name="program_name" readonly="1"/>
-                            <field name="channel_title" readonly="1"/>
-                            <field name="channel_youtube_id" readonly="1"/>
+                            <field name="base_episode_code" readonly="1"/>
                             <field name="published_at" readonly="1"/>
                             <field name="thumbnail_url" widget="url"/>
                         </group>
@@ -90,14 +81,13 @@
 
                     <notebook>
                         <page string="Description">
-                            <field name="description" placeholder="Description..."/>
+                            <field name="description"/>
                         </page>
 
                         <page string="Damma Dashboard">
                             <group>
                                 <group string="Coding">
                                     <field name="asset_code"/>
-                                    <field name="base_episode_code"/>
                                     <field name="display_name"/>
                                     <field name="week_label"/>
                                     <field name="week_number"/>
@@ -108,7 +98,6 @@
                                     <field name="platform"/>
                                     <field name="platform_format"/>
                                     <field name="publish_day"/>
-                                    <field name="is_short" readonly="1"/>
                                 </group>
                             </group>
                             <group>
@@ -137,34 +126,17 @@
                             </group>
                         </page>
 
-                        <page string="Shorts (Reels)">
-                            <field name="short_ids" context="{'default_video_id': active_id}">
-                                <list editable="bottom">
-                                    <field name="reel_number"/>
-                                    <field name="name"/>
-                                    <field name="youtube_id"/>
-                                    <field name="published_at"/>
-                                    <field name="duration"/>
-                                    <field name="view_count" string="Views"/>
-                                    <field name="like_count" string="Likes"/>
-                                    <field name="shares"/>
-                                    <field name="saves"/>
-                                    <field name="engagement_rate" widget="percentage"/>
-                                    <field name="privacy_status"/>
-                                </list>
-                            </field>
-                        </page>
-
                         <page string="Snippet">
                             <group>
                                 <group>
-                                    <field name="tags" placeholder="comma, separated, tags"/>
+                                    <field name="tags"/>
                                     <field name="category_id"/>
                                     <field name="default_language"/>
                                     <field name="default_audio_language"/>
                                 </group>
                                 <group>
-                                    <field name="live_broadcast_content"/>
+                                    <field name="channel_title" readonly="1"/>
+                                    <field name="channel_youtube_id" readonly="1"/>
                                 </group>
                             </group>
                         </page>
@@ -200,60 +172,16 @@
                             </group>
                         </page>
 
-                        <page string="Analytics">
-                            <field name="analytics_ids">
-                                <list>
-                                    <field name="date"/>
-                                    <field name="views"/>
-                                    <field name="likes"/>
-                                    <field name="comments"/>
-                                    <field name="estimated_minutes_watched"/>
-                                    <field name="average_view_duration"/>
-                                    <field name="subscribers_gained"/>
-                                    <field name="subscribers_lost"/>
-                                    <field name="engagement_rate"/>
-                                </list>
-                            </field>
-                        </page>
-
                         <page string="Content Details">
                             <group>
                                 <group>
                                     <field name="duration"/>
                                     <field name="duration_seconds"/>
                                     <field name="definition"/>
-                                    <field name="dimension"/>
                                 </group>
                                 <group>
                                     <field name="caption"/>
                                     <field name="licensed_content"/>
-                                    <field name="projection"/>
-                                </group>
-                            </group>
-                        </page>
-
-                        <page string="Topics &amp; Recording">
-                            <group>
-                                <group>
-                                    <field name="recording_date"/>
-                                </group>
-                                <group>
-                                    <field name="topic_categories"/>
-                                </group>
-                            </group>
-                        </page>
-
-                        <page string="Live Streaming"
-                              invisible="not scheduled_start_time and not actual_start_time">
-                            <group>
-                                <group>
-                                    <field name="scheduled_start_time"/>
-                                    <field name="actual_start_time"/>
-                                </group>
-                                <group>
-                                    <field name="scheduled_end_time"/>
-                                    <field name="actual_end_time"/>
-                                    <field name="concurrent_viewers"/>
                                 </group>
                             </group>
                         </page>
@@ -279,33 +207,28 @@
         </field>
     </record>
 
-    <record id="youtube_video_search" model="ir.ui.view">
-        <field name="name">youtube.video.search</field>
-        <field name="model">youtube.video</field>
+    <record id="youtube_short_search" model="ir.ui.view">
+        <field name="name">youtube.short.search</field>
+        <field name="model">youtube.short</field>
         <field name="arch" type="xml">
             <search>
                 <field name="name"/>
                 <field name="youtube_id"/>
                 <field name="asset_code"/>
-                <field name="base_episode_code"/>
                 <field name="program_code"/>
                 <field name="program_name"/>
-                <field name="channel_title"/>
-                <field name="playlist_id"/>
+                <field name="video_id"/>
                 <field name="topic"/>
                 <field name="guest"/>
                 <field name="tags"/>
-                <filter string="Shorts" name="shorts" domain="[('is_short', '=', True)]"/>
                 <filter string="Public" name="public" domain="[('privacy_status', '=', 'public')]"/>
                 <filter string="Private" name="private" domain="[('privacy_status', '=', 'private')]"/>
                 <filter string="Scheduled" name="scheduled" domain="[('publish_at', '!=', False)]"/>
                 <group>
                     <filter string="Program" name="by_program" context="{'group_by': 'program_code'}"/>
-                    <filter string="Playlist" name="by_playlist" context="{'group_by': 'playlist_id'}"/>
-                    <filter string="Channel" name="by_channel" context="{'group_by': 'channel_title'}"/>
+                    <filter string="Episode" name="by_video" context="{'group_by': 'video_id'}"/>
                     <filter string="Year" name="by_year" context="{'group_by': 'year'}"/>
                     <filter string="Week" name="by_week" context="{'group_by': 'week_label'}"/>
-                    <filter string="Privacy" name="by_privacy" context="{'group_by': 'privacy_status'}"/>
                 </group>
             </search>
         </field>
