@@ -1,5 +1,5 @@
 import requests
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from odoo import models, fields
 
 
@@ -65,10 +65,10 @@ class GoogleAccount(models.Model):
             self.refresh_token = res.get('refresh_token')
 
         if res.get('expires_in'):
-            self.token_expiry = datetime.utcnow() + timedelta(seconds=res['expires_in'])
+            self.token_expiry = datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(seconds=res['expires_in'])
 
     def _ensure_token(self):
-        if self.token_expiry and datetime.utcnow() >= self.token_expiry:
+        if self.token_expiry and datetime.now(timezone.utc).replace(tzinfo=None) >= self.token_expiry:
             self.refresh_token_func()
 
     def refresh_token_func(self):

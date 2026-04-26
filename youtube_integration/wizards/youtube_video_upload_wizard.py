@@ -161,6 +161,8 @@ class YouTubeVideoUploadWizard(models.TransientModel):
     def _fetch_video_with_account(self, video, account):
         import requests
 
+        from ..models import _helpers
+
         url = "https://www.googleapis.com/youtube/v3/videos"
         headers = {'Authorization': f'Bearer {account.access_token}'}
         params = {
@@ -169,4 +171,7 @@ class YouTubeVideoUploadWizard(models.TransientModel):
         }
         res = requests.get(url, headers=headers, params=params, timeout=30).json()
         if res.get('items'):
-            video.write(video._parse_video_payload(res['items'][0]))
+            vals = _helpers.parse_video_payload(res['items'][0])
+            if not vals.get('thumbnail'):
+                vals.pop('thumbnail', None)
+            video.write(vals)
